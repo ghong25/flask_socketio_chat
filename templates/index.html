@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Chat App</title>
+
+      <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</head>
+<body>
+
+  <div class="text-center well"><b>Chat App</b></div>
+
+      <div class="container">
+      <div class="col-sm-8">
+        <div class="no_message">
+          <h1 style='color: #ccc'>No messages yet</h1>
+          <div class="message_holder"></div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <form action="" method="POST">
+          <b>Type your message below <span class="glyphicon glyphicon-arrow-down"></span></b>
+          <div class="clearfix" style="margin-top: 5px;"></div>
+          <input type="text" class="username form-control" placeholder="User Name">
+          <div style="padding-top: 5px;"></div>
+          <input type="text" class="message form-control" placeholder="Messages">
+          <div style="padding-top: 5px;"></div>
+          <button type="submit" class="btn btn-success btn-block"><span class="glyphicon glyphicon-send"></span> Send</button>
+        </form>
+      </div>
+    </div>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+  <script type="text/javascript" charset="utf-8">
+
+
+          const socket = io.connect('http://127.0.0.1:5000');
+
+          // verify our websocket connection is established
+          socket.on('connect', function() {
+              socket.emit('my event', {
+                data: 'User Connected'
+              });
+          });
+
+          let form = $('form').on('submit', function(e) {
+            e.preventDefault();
+            let user = $('input.username').val();
+            let message = $('input.message').val();
+            console.log(user + ": " + message);
+
+
+            // transmit username and message back to the server
+              socket.emit('message', {
+                user: user, message: message
+              })
+          })
+
+
+          // capture message from server
+      socket.on('my event', function(msg) {
+        console.log(msg)
+        if(typeof msg.user_name !== 'undefined') {
+          $('h1').remove()
+          $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>')
+        }
+      } )
+
+
+
+  </script>
+
+</body>
+</html>
