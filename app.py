@@ -1,10 +1,11 @@
 # server side code
 
 from flask import Flask, render_template
-from flask_socketio import SocketIO, join_room, emit, send
+from flask_socketio import SocketIO, join_room, send
 
 # initialize Flask
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secretpassword'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 
@@ -17,15 +18,10 @@ def message_received():
     print("message was received")
 
 
-@socketio.on('my event')
+@socketio.on('my message')
 def handle_custom_event(json):
     print('received message: ' + str(json))
-    emit('my response', json, callback=message_received)
-
-
-@socketio.on('message')
-def message(json):
-    print(str(json))
+    socketio.emit('my response', json, callback=message_received)
 
 
 # show that client has connected
@@ -40,7 +36,7 @@ def client_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=5001)
+    socketio.run(app, debug=True)
 
 """
 
