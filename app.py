@@ -9,9 +9,11 @@ app.config['SECRET_KEY'] = 'secretpassword'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 
+# home page
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 
 def message_received():
