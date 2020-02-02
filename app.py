@@ -1,13 +1,36 @@
 # server side code
 
 from flask import Flask, render_template
+from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO, join_room, send
+from config import Config
+from login import LoginForm, RegisterForm
 
 # initialize Flask
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secretpassword'
+Bootstrap(app)
+app.config.from_object(Config)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+
+# login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('login.html', form=form)
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('signup.html', form=form)
 
 # home page
 @app.route('/')

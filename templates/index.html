@@ -52,10 +52,11 @@
     </div>
 
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <script>
       const socket = io.connect('http://' + document.domain + ':' + location.port)
+      const now = new Date();
       // broadcast a message
       socket.on('connect', function() {
         socket.emit('my message', {
@@ -72,7 +73,8 @@
           // send username and message back to the server
           socket.emit('my message', {
             user_name : user_name,
-            message : user_input
+            message : user_input,
+            date: now
           })
           // empty the input field
           $('input.message').val('').focus()
@@ -85,7 +87,7 @@
         console.log(msg)
         if(typeof msg.user_name !== 'undefined') {
           $('h1').remove()
-          $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>')
+            $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>')
         }
       } )
     </script>
