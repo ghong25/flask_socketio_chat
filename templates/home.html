@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  </head>
+
+  <body>
+  <form action="/index" method="POST">
+  {% for user in users %}
+    <input type="submit" name="test" value='{{ user[6:] }}'>
+  {% endfor %}
+    </form>
+  </body>
+</html>
