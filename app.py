@@ -69,12 +69,9 @@ def logout():
     return redirect(url_for('index'))
 
 
-# create a unique int given two user ids for a private chat room
 def create_room(user1, user2):
-    user1_id = int(str(db.session.query(User.id).filter(User.username == user1).first())[1:-2])
-    user2_id = int(str(db.session.query(User.id).filter(User.username == user2).first())[1:-2])
-    # cantor pairing function for room id
-    return int(((user1_id + user2_id) * (user1_id + user2_id + 1))/2 + user2_id)
+    # return string for new room that has users sorted alphabetically
+    return "_".join(sorted([user1, user2], key=str.lower))
 
 
 # home page
@@ -90,9 +87,10 @@ def index():
         user2 = request.form['test']
 
         room_id = create_room(current, user2)
+        print(room_id)
 
         # with button click, send user to the new private room
-        return redirect('/chat_room/' + str(room_id))
+        return redirect('/chat_room/' + room_id)
 
     return render_template('home.html', users=users, username=current)
 
@@ -104,7 +102,12 @@ def chat_room(room_id):
 
     client_user = str(current_user)[6:]
 
-    return render_template('chatRoom.html', username=client_user, room=room_id)
+    users = room_id.split("_")
+    for n in users:
+        if n != client_user:
+            user2 = n
+
+    return render_template('chatRoom.html', username=client_user, user2=user2, room=room_id)
 
 
 def message_received():
@@ -134,6 +137,7 @@ def client_disconnect():
 def join(data):
     username = data['username']
     room = data['room']
+    print(data)
     join_room(room)
     socketio.send({'msg': username + " has joined the " + room + ' room'}, room=room)
 
