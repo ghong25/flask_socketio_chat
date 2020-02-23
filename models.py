@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import login_manager, db
+from app import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -22,25 +22,14 @@ class User(UserMixin, db.Model):
         return f'<User {self.username}'
 
 
-class Channel(db.Model):
-    __tablename__ = 'channel'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60))
-    from_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    to_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return f'<Channel {self.name}'
-
-
 class Message(db.Model):
     __tablename__ = 'message'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    chatroom = db.Column(db.String(60))
     from_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     to_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    channel_id = db.Column(db.Integer, db.ForeignKey('channel.id'))
 
     def __repr__(self):
         return f'<Message {self.message}'

@@ -33,6 +33,7 @@
         color: black;
         margin-bottom: 5px;
       }
+
     </style>
 
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -41,13 +42,12 @@
   </head>
   <body>
 
-    <div class="text-center well"><b>Chat App</b></div>
+    <div class="text-center well"><b>Chat with {{ user2 }}</b></div>
     {% for message in chat_history %}
     <a>
       {{ message }}
     </a>
     {% endfor %}
-    {{ client_user }}
     <div class="container">
       <div class="col-sm-8">
         <div class="no_message">
@@ -72,8 +72,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <script>
       const socket = io.connect('http://' + document.domain + ':' + location.port)
-      const now = new Date();
       const username = '{{ username }}';
+      const user2 = '{{ user2 }}';
       let room = '{{ room }}';
 
       // broadcast a message
@@ -94,9 +94,10 @@
           // send username and message back to the server
           socket.emit('message', {
             'username' : username,
+              'to': user2,
             'message' : user_input,
               'room': room,
-            'date': now
+            'date': new Date().toLocaleString()
           })
           // empty the input field
           $('input.message').val('').focus()
@@ -105,17 +106,25 @@
 
       // get message from server
       socket.on('response', function(msg) {
+
         console.log(msg)
         if(typeof msg.username !== 'undefined') {
           $('h1').remove();
+          var time = msg.date;
+          // format the date time string
+          time = time.substring(11, 16) + " " + time.substring(19, 22) + ", "+ time.substring(0, 4);
+          console.log(msg.message)
           if (msg.username != username){
-              $('div.message_holder').append('<div class="user2_msg"><b style="color: darkslategrey">'+msg.username+': </b> '+msg.message+'</div>')
+              $('div.message_holder').append('<div class="user2_msg"><b style="color: darkslategrey">'+msg.username+': </b> '+msg.message+' <p class="alignright">'+time+'</p></div>');
           }
-          else{
-              $('div.message_holder').append('<div class="user1_msg"><b style="color: lightgrey">'+msg.username+': </b> '+msg.message+'</div>')
+          else {
+              $('div.message_holder').append('<div class="user1_msg"><b style="color: lightgrey">'+msg.username+': </b> '+msg.message+' <p class="alignright">'+time+'</p></div>')
           }
+          $('div p').css('text-align','right');
         }
-      } )
+      })
+
+
 
       // join room
       function joinRoom(room) {

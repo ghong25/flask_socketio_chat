@@ -8,6 +8,9 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, logout_user, login_required, current_user, login_user
 
+from datetime import datetime
+from dateutil import parser
+
 from models import *
 
 
@@ -19,9 +22,12 @@ login_manager.login_view = 'user_login'
 socketio = SocketIO(app, cors_allowed_origins='*')
 db = SQLAlchemy(app)
 
-# list of rooms
-ROOMS = [2, 4, 8]
-
+# TODO: logout
+#  home button
+#  forgot password
+#  add date to displayed messages
+#  message history
+#  indicate when user is online/offline
 
 # login page
 @app.route('/user_login', methods=['GET', 'POST'])
@@ -102,12 +108,16 @@ def chat_room(room_id):
 
     client_user = str(current_user)[6:]
 
+    now = datetime.now()
+    time = now.strftime("%H:%M:%S %m/%d/%Y")
+    print(time)
+
     users = room_id.split("_")
     for n in users:
         if n != client_user:
             user2 = n
 
-    return render_template('chatRoom.html', username=client_user, user2=user2, room=room_id)
+    return render_template('chatRoom.html', time=time, username=client_user, user2=user2, room=room_id)
 
 
 def message_received():
@@ -118,6 +128,27 @@ def message_received():
 def message(data):
     room = data['room']
     print('received message: ' + str(data))
+
+    """message = Message(message=data[''])
+
+    message = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    chatroom = db.Column(db.String(60))
+    from_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    to_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    db.session.add(message)
+    db.session.commit()"""
+
+    # print(data)
+    mess = data['message']
+    timestamp = parser.parse(data['date'])
+    from_user = str(current_user)[6:]
+    to_user = data['to']
+
+    #print(mess, timestamp, room, from_user, to_user)
+    #print(type(timestamp))
+    #print(timestamp)
 
     socketio.emit('response', data, callback=message_received, room=room)
 
@@ -137,7 +168,6 @@ def client_disconnect():
 def join(data):
     username = data['username']
     room = data['room']
-    print(data)
     join_room(room)
     socketio.send({'msg': username + " has joined the " + room + ' room'}, room=room)
 
