@@ -27,9 +27,9 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    chatroom = db.Column(db.String(60))
     from_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     to_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    chatroom = db.Column(db.String(60))
 
     def __repr__(self):
         return f'<Message {self.message}'

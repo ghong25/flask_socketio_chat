@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Chat Room</title>
-</head>
 <body>
-<!DOCTYPE html>
-<html lang="en">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -38,16 +34,14 @@
 
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-
   </head>
-  <body>
+</body>
 
+  <body>
+    <a href="/" class="navbar-brand pull-left"><strong>Home</strong></a>
+    <a href="/logout" class="navbar-brand pull-right"><strong>Logout</strong></a>
     <div class="text-center well"><b>Chat with {{ user2 }}</b></div>
-    {% for message in chat_history %}
-    <a>
-      {{ message }}
-    </a>
-    {% endfor %}
+
     <div class="container">
       <div class="col-sm-8">
         <div class="no_message">
@@ -112,7 +106,7 @@
           $('h1').remove();
           var time = msg.date;
           // format the date time string
-          time = time.substring(11, 16) + " " + time.substring(19, 22) + ", "+ time.substring(0, 4);
+          time = time.substring(11, 15) + " " + time.substring(19, 22) + ", "+ time.substring(0, 4);
           console.log(msg.message)
           if (msg.username != username){
               $('div.message_holder').append('<div class="user2_msg"><b style="color: darkslategrey">'+msg.username+': </b> '+msg.message+' <p class="alignright">'+time+'</p></div>');

@@ -22,12 +22,10 @@ login_manager.login_view = 'user_login'
 socketio = SocketIO(app, cors_allowed_origins='*')
 db = SQLAlchemy(app)
 
-# TODO: logout
-#  home button
-#  forgot password
-#  add date to displayed messages
+# TODO:
 #  message history
 #  indicate when user is online/offline
+
 
 # login page
 @app.route('/user_login', methods=['GET', 'POST'])
@@ -129,26 +127,16 @@ def message(data):
     room = data['room']
     print('received message: ' + str(data))
 
-    """message = Message(message=data[''])
-
-    message = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    chatroom = db.Column(db.String(60))
-    from_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    to_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    db.session.add(message)
-    db.session.commit()"""
-
-    # print(data)
     mess = data['message']
-    timestamp = parser.parse(data['date'])
-    from_user = str(current_user)[6:]
-    to_user = data['to']
+    timestamp = data['date']
 
-    #print(mess, timestamp, room, from_user, to_user)
-    #print(type(timestamp))
-    #print(timestamp)
+    # get the user.id from the username
+    from_user = int(str(db.session.query(User.id).filter(User.username == current_user.username).first())[1:-2])
+    to_user = int(str(db.session.query(User.id).filter(User.username == data['to']).first())[1:-2])
+
+    m = Message(message=mess, timestamp=timestamp, from_user=from_user, to_user=to_user, chatroom=room)
+    db.session.add(m)
+    db.session.commit()
 
     socketio.emit('response', data, callback=message_received, room=room)
 
