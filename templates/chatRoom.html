@@ -67,8 +67,11 @@
     <script>
       const socket = io.connect('http://' + document.domain + ':' + location.port)
       const username = '{{ username }}';
+      let message_hist = '{{ message_hist|safe|tojson }}'
       const user2 = '{{ user2 }}';
       let room = '{{ room }}';
+
+      console.log(message_hist)
 
       // broadcast a message
       socket.on('connect', function() {

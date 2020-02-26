@@ -33,3 +33,16 @@ class Message(db.Model):
 
     def __repr__(self):
         return f'<Message {self.message}'
+
+"""
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+engine = create_engine("postgresql+psycopg2://postgres:zeKaXHNnj3FpnGJj@database-1.c5aqdxmdgobi.us-east-1.rds.amazonaws.com:5432")
+Session = sessionmaker(bind=engine, autocommit=True)
+session = Session()
+#q = eng.execute("select column_name, data_type from information_schema.columns where table_name = 'message'")
+#engine.execute("select * from public.user")
+session.execute("delete from public.message where from_user = 8")
+#print(q.fetchall())
+"""

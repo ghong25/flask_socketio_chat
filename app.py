@@ -1,4 +1,4 @@
-from flask import redirect, url_for, render_template, flash
+from flask import redirect, url_for, render_template, flash, json
 from login import LoginForm, RegisterForm
 
 from flask import Flask, request
@@ -7,9 +7,6 @@ from flask_socketio import SocketIO, join_room, leave_room
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, logout_user, login_required, current_user, login_user
-
-from datetime import datetime
-from dateutil import parser
 
 from models import *
 
@@ -23,8 +20,8 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 db = SQLAlchemy(app)
 
 # TODO:
-#  message history
-#  indicate when user is online/offline
+#  message history - I've now managed to pass message history from server side to client side in the form of json, now
+#  have to parse and render on the client side
 
 
 # login page
@@ -115,7 +112,16 @@ def chat_room(room_id):
         if n != client_user:
             user2 = n
 
-    return render_template('chatRoom.html', time=time, username=client_user, user2=user2, room=room_id)
+    # get a list of dictionaries containing the columns of message table for the chat room
+    message_list = []
+    message_query = db.session.query(Message).filter(Message.chatroom == room_id).all()
+    for message in message_query:
+        message_dict = message.__dict__
+        del message_dict['_sa_instance_state']
+        message_list.append(message_dict)
+    message_list = json.dumps(message_list)
+
+    return render_template('chatRoom.html', time=time, username=client_user, user2=user2, room=room_id, message_hist=message_list)
 
 
 def message_received():
