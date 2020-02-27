@@ -9,9 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, logout_user, login_required, current_user, login_user
 from pytz import timezone
 
-from models import *
-
-
 app = Flask(__name__)
 app.config.from_object(Config)
 Bootstrap(app)
@@ -19,6 +16,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'user_login'
 socketio = SocketIO(app, cors_allowed_origins='*')
 db = SQLAlchemy(app)
+
+from models import *
+
 
 # login page
 @app.route('/user_login', methods=['GET', 'POST'])
