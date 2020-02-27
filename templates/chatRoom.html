@@ -67,9 +67,12 @@
     <script>
       const socket = io.connect('http://' + document.domain + ':' + location.port)
       const username = '{{ username }}';
-      let message_hist = '{{ message_hist|safe|tojson }}'
+      // convert list of dictionaries to object
+      let message_hist = JSON.parse('{{ message_hist | tojson | safe }}');
       const user2 = '{{ user2 }}';
       let room = '{{ room }}';
+      // dictionary/json mapping id to username
+      let name_to_id = JSON.parse('{{ name_to_id | tojson | safe }}')
 
       console.log(message_hist)
 
@@ -100,6 +103,28 @@
           $('input.message').val('').focus()
           }
         })
+
+      // display the message history: for each object in array of object, render message
+      if (message_hist.length > 0) {
+          // remove the placeholder that says "no messages yet"
+          $('h1').remove();
+          Array.from(message_hist).forEach(element => {
+              //element['chatroom']
+              let time = new Date(element['timestamp']);
+              time = time.getHours() + ':' + time.getMinutes() + " " + (time.getMonth() + 1) + ('/') + time.getDate();
+              // user 1 messages
+              if (element['from_user'] == name_to_id[username]) {
+                   $('div.message_holder').append('<div class="user1_msg"><b style="color: lightgrey">'+username+': </b> '+element['message']+' <p class="alignright">'+time+'</p></div>')
+              }
+              else {
+                  $('div.message_holder').append('<div class="user2_msg"><b style="color: darkslategrey">'+user2+': </b> '+element['message']+' <p class="alignright">'+time+'</p></div>');
+              }
+              $('div p').css('text-align','right');
+          })
+      };
+
+
+
 
       // get message from server
       socket.on('response', function(msg) {

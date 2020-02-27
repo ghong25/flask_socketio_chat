@@ -1,4 +1,4 @@
-from flask import redirect, url_for, render_template, flash, json
+from flask import redirect, url_for, render_template, flash, json, jsonify
 from login import LoginForm, RegisterForm
 
 from flask import Flask, request
@@ -7,6 +7,7 @@ from flask_socketio import SocketIO, join_room, leave_room
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, logout_user, login_required, current_user, login_user
+from pytz import timezone
 
 from models import *
 
@@ -18,11 +19,6 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'user_login'
 socketio = SocketIO(app, cors_allowed_origins='*')
 db = SQLAlchemy(app)
-
-# TODO:
-#  message history - I've now managed to pass message history from server side to client side in the form of json, now
-#  have to parse and render on the client side
-
 
 # login page
 @app.route('/user_login', methods=['GET', 'POST'])
@@ -103,9 +99,9 @@ def chat_room(room_id):
 
     client_user = str(current_user)[6:]
 
-    now = datetime.now()
+    tz = timezone('EST')
+    now = datetime.now(tz)
     time = now.strftime("%H:%M:%S %m/%d/%Y")
-    print(time)
 
     users = room_id.split("_")
     for n in users:
@@ -119,9 +115,13 @@ def chat_room(room_id):
         message_dict = message.__dict__
         del message_dict['_sa_instance_state']
         message_list.append(message_dict)
-    message_list = json.dumps(message_list)
 
-    return render_template('chatRoom.html', time=time, username=client_user, user2=user2, room=room_id, message_hist=message_list)
+    # create a dictionary that maps user id to username
+    user1 = User.query.filter_by(username=client_user).first()
+    user2_obj = User.query.filter_by(username=user2).first()
+    name_to_id = {client_user: user1.id, user2: user2_obj.id}
+
+    return render_template('chatRoom.html', time=time, username=client_user, user2=user2, room=room_id, message_hist=message_list, name_to_id=name_to_id)
 
 
 def message_received():
