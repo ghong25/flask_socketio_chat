@@ -111,7 +111,7 @@
           Array.from(message_hist).forEach(element => {
               //element['chatroom']
               let time = new Date(element['timestamp']);
-              time = time.getHours() + ':' + time.getMinutes() + " " + (time.getMonth() + 1) + ('/') + time.getDate();
+              //time = time.getHours() + ':' + time.getMinutes() + " " + (time.getMonth() + 1) + ('/') + time.getDate();
               // user 1 messages
               if (element['from_user'] == name_to_id[username]) {
                    $('div.message_holder').append('<div class="user1_msg"><b style="color: lightgrey">'+username+': </b> '+element['message']+' <p class="alignright">'+time+'</p></div>')
@@ -134,7 +134,7 @@
           $('h1').remove();
           var time = msg.date;
           // format the date time string
-          time = time.substring(11, 15) + " " + time.substring(19, 22) + ", "+ time.substring(0, 4);
+          //time = time.substring(11, 15) + " " + time.substring(19, 22) + ", "+ time.substring(0, 4);
           console.log(msg.message)
           if (msg.username != username){
               $('div.message_holder').append('<div class="user2_msg"><b style="color: darkslategrey">'+msg.username+': </b> '+msg.message+' <p class="alignright">'+time+'</p></div>');

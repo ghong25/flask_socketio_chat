@@ -54,6 +54,8 @@ def signup():
 
         db.session.add(user)
         db.session.commit()
+
+        login_user(user)
         return redirect('/index')
 
     return render_template('signup.html', form=form)
